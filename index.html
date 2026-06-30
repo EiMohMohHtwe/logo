@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Palette Preview</title>
+
+  <style>
+    :root {
+      --bg: #36454F;
+      --text: #FFC107;
+      --accent: #C62828;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      color: #222;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: 28px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      background: #ddd;
+      color: #222;
+    }
+
+    button.active {
+      background: #111;
+      color: #fff;
+    }
+
+    .custom-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="color"] {
+      width: 48px;
+      height: 42px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .preview {
+      background: var(--bg);
+      border-radius: 22px;
+      padding: 54px 28px;
+      text-align: center;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.20);
+      min-height: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-card {
+      width: 100%;
+      max-width: 720px;
+      padding: 52px 26px 44px;
+      border-radius: 18px;
+      border: 5px solid var(--accent);
+      background: rgba(255,255,255,0.035);
+    }
+
+    .triangle-wrap {
+      width: 168px;
+      height: 132px;
+      margin: 0 auto 30px;
+      position: relative;
+    }
+
+    .triangle-main {
+      width: 0;
+      height: 0;
+      border-left: 84px solid transparent;
+      border-right: 84px solid transparent;
+      border-bottom: 132px solid var(--accent);
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.24));
+    }
+
+    .triangle-inner {
+      width: 0;
+      height: 0;
+      border-left: 52px solid transparent;
+      border-right: 52px solid transparent;
+      border-bottom: 84px solid var(--bg);
+      position: absolute;
+      left: 32px;
+      bottom: 17px;
+    }
+
+    .triangle-small {
+      width: 0;
+      height: 0;
+      border-left: 30px solid transparent;
+      border-right: 30px solid transparent;
+      border-bottom: 50px solid var(--text);
+      position: absolute;
+      left: 54px;
+      bottom: 30px;
+    }
+
+    .brand {
+      color: var(--text);
+      font-size: clamp(42px, 7vw, 84px);
+      font-weight: 900;
+      line-height: 1.18;
+      letter-spacing: 1px;
+      margin: 0 0 18px;
+    }
+
+    .tagline {
+      color: rgba(255,255,255,0.92);
+      font-size: 17px;
+      letter-spacing: 7px;
+      text-transform: uppercase;
+    }
+
+    .accent-line {
+      width: 58%;
+      height: 8px;
+      background: var(--accent);
+      margin: 28px auto 0;
+      border-radius: 999px;
+    }
+
+    .contrast-preview {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.10);
+    }
+
+    .sample-title {
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .sample-box {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.1);
+      margin-bottom: 14px;
+    }
+
+    .sample-bg {
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      font-size: 32px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .sample-accent {
+      background: var(--accent);
+      color: #fff;
+      padding: 12px;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .mini-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .mini {
+      height: 92px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      border: 1px solid rgba(0,0,0,0.08);
+      text-align: center;
+      padding: 8px;
+    }
+
+    .mini.bg { background: var(--bg); color: white; }
+    .mini.text { background: var(--text); color: #111; }
+    .mini.accent { background: var(--accent); color: white; }
+
+    .codes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .code-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    .swatch {
+      height: 54px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .label {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 850px) {
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 14px; }
+      .preview { padding: 30px 14px; min-height: 390px; }
+      .logo-card { padding: 38px 14px 34px; }
+      .tagline { font-size: 13px; letter-spacing: 3px; }
+      .triangle-wrap { transform: scale(0.82); margin-bottom: 16px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Color Palette Preview</h1>
+
+    <div class="buttons" id="buttons"></div>
+
+    <div class="custom-panel">
+      <div class="field">
+        <label>Background</label>
+        <div class="color-row">
+          <input type="color" id="customBgPicker">
+          <input type="text" id="customBgText">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Text</label>
+        <div class="color-row">
+          <input type="color" id="customTextPicker">
+          <input type="text" id="customTextText">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Accent</label>
+        <div class="color-row">
+          <input type="color" id="customAccentPicker">
+          <input type="text" id="customAccentText">
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-grid">
+      <div class="preview">
+        <div class="logo-card">
+          <div class="triangle-wrap">
+            <div class="triangle-main"></div>
+            <div class="triangle-inner"></div>
+            <div class="triangle-small"></div>
+          </div>
+
+          <div class="brand">ရတနာရွှေစင်</div>
+          <div class="tagline">Building Materials</div>
+          <div class="accent-line"></div>
+        </div>
+      </div>
+
+      <div class="contrast-preview">
+        <div class="sample-title">Preview</div>
+
+        <div class="sample-box">
+          <div class="sample-bg">ရတနာရွှေစင်</div>
+          <div class="sample-accent">ACCENT SAMPLE</div>
+        </div>
+
+        <div class="mini-row">
+          <div class="mini bg">BG</div>
+          <div class="mini text">TEXT</div>
+          <div class="mini accent">ACCENT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="codes">
+      <div class="code-card">
+        <div class="swatch" id="bgSwatch"></div>
+        <div class="label">Background / ခဲပြာ</div>
+        <div class="value" id="bgCode"></div>
+      </div>
+
+      <div class="code-card">
+        <div class="swatch" id="textSwatch"></div>
+        <div class="label">Text / အဝါ</div>
+        <div class="value" id="textCode"></div>
+      </div>
+
+      <div class="code-card">
+        <div class="swatch" id="accentSwatch"></div>
+        <div class="label">Accent / အနီ</div>
+        <div class="value" id="accentCode"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const palettes = [
+      { name: "Palette 1", bg: "#2F3A40", text: "#F4B400", accent: "#B21F24" },
+      { name: "Palette 2", bg: "#36454F", text: "#FFC107", accent: "#C62828" },
+      { name: "Palette 3", bg: "#263238", text: "#D9A441", accent: "#A31621" },
+      { name: "Palette 4", bg: "#3E4C59", text: "#FFD23F", accent: "#D62828" },
+      { name: "Palette 5", bg: "#1F2A30", text: "#E6B800", accent: "#9E1B1B" }
+    ];
+
+    const buttons = document.getElementById("buttons");
+
+    const customBgPicker = document.getElementById("customBgPicker");
+    const customTextPicker = document.getElementById("customTextPicker");
+    const customAccentPicker = document.getElementById("customAccentPicker");
+
+    const customBgText = document.getElementById("customBgText");
+    const customTextText = document.getElementById("customTextText");
+    const customAccentText = document.getElementById("customAccentText");
+
+    palettes.forEach((palette, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = palette.name;
+      btn.addEventListener("click", () => setPalette(palette, index));
+      buttons.appendChild(btn);
+    });
+
+    const customBtn = document.createElement("button");
+    customBtn.textContent = "Custom";
+    customBtn.addEventListener("click", applyCustom);
+    buttons.appendChild(customBtn);
+
+    function normalizeHex(value) {
+      let hex = value.trim().toUpperCase();
+      if (!hex.startsWith("#")) hex = "#" + hex;
+      if (/^#[0-9A-F]{6}$/.test(hex)) return hex;
+      return null;
+    }
+
+    function updateDisplay(p) {
+      document.documentElement.style.setProperty("--bg", p.bg);
+      document.documentElement.style.setProperty("--text", p.text);
+      document.documentElement.style.setProperty("--accent", p.accent);
+
+      document.getElementById("bgCode").textContent = p.bg;
+      document.getElementById("textCode").textContent = p.text;
+      document.getElementById("accentCode").textContent = p.accent;
+
+      document.getElementById("bgSwatch").style.backgroundColor = p.bg;
+      document.getElementById("textSwatch").style.backgroundColor = p.text;
+      document.getElementById("accentSwatch").style.backgroundColor = p.accent;
+
+      customBgPicker.value = p.bg;
+      customTextPicker.value = p.text;
+      customAccentPicker.value = p.accent;
+
+      customBgText.value = p.bg;
+      customTextText.value = p.text;
+      customAccentText.value = p.accent;
+    }
+
+    function setActive(index) {
+      [...buttons.children].forEach((button, i) => {
+        button.classList.toggle("active", i === index);
+      });
+    }
+
+    function setPalette(palette, index) {
+      updateDisplay(palette);
+      setActive(index);
+    }
+
+    function applyCustom() {
+      const bg = normalizeHex(customBgText.value) || customBgPicker.value.toUpperCase();
+      const text = normalizeHex(customTextText.value) || customTextPicker.value.toUpperCase();
+      const accent = normalizeHex(customAccentText.value) || customAccentPicker.value.toUpperCase();
+
+      updateDisplay({ bg, text, accent });
+      setActive(palettes.length);
+    }
+
+    function syncFromPicker(picker, textInput) {
+      textInput.value = picker.value.toUpperCase();
+      applyCustom();
+    }
+
+    function syncFromText(textInput) {
+      const hex = normalizeHex(textInput.value);
+      if (hex) {
+        textInput.value = hex;
+        applyCustom();
+      }
+    }
+
+    customBgPicker.addEventListener("input", () => syncFromPicker(customBgPicker, customBgText));
+    customTextPicker.addEventListener("input", () => syncFromPicker(customTextPicker, customTextText));
+    customAccentPicker.addEventListener("input", () => syncFromPicker(customAccentPicker, customAccentText));
+
+    customBgText.addEventListener("input", () => syncFromText(customBgText));
+    customTextText.addEventListener("input", () => syncFromText(customTextText));
+    customAccentText.addEventListener("input", () => syncFromText(customAccentText));
+
+    setPalette(palettes[1], 1);
+  </script>
+</body>
+</html>
